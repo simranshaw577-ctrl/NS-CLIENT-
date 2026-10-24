@@ -1,3 +1,4 @@
+
 package dev.nsclient;
 
 import net.fabricmc.api.ClientModInitializer;
@@ -8,6 +9,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.util.InputUtil;
+import net.minecraft.client.render.RenderTickCounter;
 import net.minecraft.text.Text;
 import org.lwjgl.glfw.GLFW;
 
@@ -31,15 +33,26 @@ public final class NSClient implements ClientModInitializer {
             }
         });
 
-        HudRenderCallback.EVENT.register((DrawContext context, float tickDelta) -> {
+        HudRenderCallback.EVENT.register((DrawContext context, RenderTickCounter tickCounter) -> {
             MinecraftClient client = MinecraftClient.getInstance();
-            if (client.player == null || client.options.hudHidden) return;
 
-            context.drawText(client.textRenderer, Text.literal("NS CLIENT"), 6, 6, 0x55FFFF, true);
-            context.drawText(client.textRenderer,
+            if (client.player == null || client.options.hudHidden) {
+                return;
+            }
+
+            context.drawText(
+                    client.textRenderer,
+                    Text.literal("NS CLIENT"),
+                    6, 6, 0x55FFFF, true
+            );
+
+            context.drawText(
+                    client.textRenderer,
                     Text.literal("XYZ: " + client.player.getBlockX() + " "
-                            + client.player.getBlockY() + " " + client.player.getBlockZ()),
-                    6, 18, 0xFFFFFF, true);
+                            + client.player.getBlockY() + " "
+                            + client.player.getBlockZ()),
+                    6, 18, 0xFFFFFF, true
+            );
         });
     }
-                             }
+}
