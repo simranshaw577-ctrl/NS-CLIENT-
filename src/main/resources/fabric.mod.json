@@ -1,0 +1,18 @@
+{
+  "schemaVersion": 1,
+  "id": "nsclient",
+  "version": "${version}",
+  "name": "NS CLIENT",
+  "description": "An original lightweight client-side HUD for Minecraft 1.21.1.",
+  "authors": ["NS CLIENT"],
+  "environment": "client",
+  "entrypoints": {
+    "client": ["dev.nsclient.NSClient"]
+  },
+  "depends": {
+    "fabricloader": ">=0.16.5",
+    "minecraft": "~1.21.1",
+    "java": ">=21",
+    "fabric-api": "*"
+  }
+}
