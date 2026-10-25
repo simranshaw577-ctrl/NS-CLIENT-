@@ -14,16 +14,22 @@ import net.minecraft.text.Text;
 import org.lwjgl.glfw.GLFW;
 
 public final class NSClient implements ClientModInitializer {
+
+    public static boolean coordinatesEnabled = true;
+    public static boolean fpsEnabled = true;
+
     private KeyBinding openMenuKey;
 
     @Override
     public void onInitializeClient() {
-        openMenuKey = KeyBindingHelper.registerKeyBinding(new KeyBinding(
-                "key.nsclient.open_menu",
-                InputUtil.Type.KEYSYM,
-                GLFW.GLFW_KEY_RIGHT_SHIFT,
-                "category.nsclient"
-        ));
+        openMenuKey = KeyBindingHelper.registerKeyBinding(
+                new KeyBinding(
+                        "key.nsclient.open_menu",
+                        InputUtil.Type.KEYSYM,
+                        GLFW.GLFW_KEY_RIGHT_SHIFT,
+                        "category.nsclient"
+                )
+        );
 
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
             while (openMenuKey.wasPressed()) {
@@ -33,26 +39,42 @@ public final class NSClient implements ClientModInitializer {
             }
         });
 
-        HudRenderCallback.EVENT.register((DrawContext context, RenderTickCounter tickCounter) -> {
-            MinecraftClient client = MinecraftClient.getInstance();
+        HudRenderCallback.EVENT.register(
+                (DrawContext context, RenderTickCounter tickCounter) -> {
+                    MinecraftClient client = MinecraftClient.getInstance();
 
-            if (client.player == null || client.options.hudHidden) {
-                return;
-            }
+                    if (client.player == null || client.options.hudHidden) {
+                        return;
+                    }
 
-            context.drawText(
-                    client.textRenderer,
-                    Text.literal("NS CLIENT"),
-                    6, 6, 0x55FFFF, true
-            );
+                    context.drawText(
+                            client.textRenderer,
+                            Text.literal("NS CLIENT"),
+                            6, 6, 0x55FFFF, true
+                    );
 
-            context.drawText(
-                    client.textRenderer,
-                    Text.literal("XYZ: " + client.player.getBlockX() + " "
-                            + client.player.getBlockY() + " "
-                            + client.player.getBlockZ()),
-                    6, 18, 0xFFFFFF, true
-            );
-        });
+                    if (coordinatesEnabled) {
+                        context.drawText(
+                                client.textRenderer,
+                                Text.literal(
+                                        "XYZ: "
+                                        + client.player.getBlockX() + " "
+                                        + client.player.getBlockY() + " "
+                                        + client.player.getBlockZ()
+                                ),
+                                6, 18, 0xFFFFFF, true
+                        );
+                    }
+
+                    if (fpsEnabled) {
+                        context.drawText(
+                                client.textRenderer,
+                                Text.literal("FPS: " + client.getCurrentFps()),
+                                6, coordinatesEnabled ? 30 : 18,
+                                0x55FF55, true
+                        );
+                    }
+                }
+        );
     }
 }
