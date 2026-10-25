@@ -8,36 +8,75 @@ import net.minecraft.text.Text;
 
 public final class NSClientScreen extends Screen {
 
+    private String category = "HUD";
+
     public NSClientScreen() {
         super(Text.literal("NS CLIENT"));
     }
 
     @Override
     protected void init() {
-        int x = this.width / 2;
-        int y = this.height / 2;
+        clearChildren();
+
+        int left = Math.max(8, this.width / 2 - 145);
+        int top = Math.max(8, this.height / 2 - 95);
+        int panelWidth = Math.min(290, this.width - 16);
 
         addDrawableChild(ButtonWidget.builder(
-                coordinatesText(),
-                button -> {
-                    NSClient.coordinatesEnabled =
-                            !NSClient.coordinatesEnabled;
-                    button.setMessage(coordinatesText());
-                }
-        ).dimensions(x - 100, y - 35, 200, 20).build());
+                Text.literal("HUD"),
+                button -> openCategory("HUD")
+        ).dimensions(left + 8, top + 35, 82, 20).build());
 
         addDrawableChild(ButtonWidget.builder(
-                fpsText(),
-                button -> {
-                    NSClient.fpsEnabled = !NSClient.fpsEnabled;
-                    button.setMessage(fpsText());
-                }
-        ).dimensions(x - 100, y - 5, 200, 20).build());
+                Text.literal("VISUAL"),
+                button -> openCategory("VISUAL")
+        ).dimensions(left + 8, top + 59, 82, 20).build());
 
         addDrawableChild(ButtonWidget.builder(
-                Text.literal("Close"),
+                Text.literal("COMBAT"),
+                button -> openCategory("COMBAT")
+        ).dimensions(left + 8, top + 83, 82, 20).build());
+
+        addDrawableChild(ButtonWidget.builder(
+                Text.literal("ANIMATIONS"),
+                button -> openCategory("ANIMATIONS")
+        ).dimensions(left + 8, top + 107, 82, 20).build());
+
+        addDrawableChild(ButtonWidget.builder(
+                Text.literal("CHAT"),
+                button -> openCategory("CHAT")
+        ).dimensions(left + 8, top + 131, 82, 20).build());
+
+        int settingsX = left + 100;
+
+        if (category.equals("HUD")) {
+            addDrawableChild(ButtonWidget.builder(
+                    coordinatesText(),
+                    button -> {
+                        NSClient.coordinatesEnabled =
+                                !NSClient.coordinatesEnabled;
+                        button.setMessage(coordinatesText());
+                    }
+            ).dimensions(settingsX, top + 45, 180, 20).build());
+
+            addDrawableChild(ButtonWidget.builder(
+                    fpsText(),
+                    button -> {
+                        NSClient.fpsEnabled = !NSClient.fpsEnabled;
+                        button.setMessage(fpsText());
+                    }
+            ).dimensions(settingsX, top + 73, 180, 20).build());
+        }
+
+        addDrawableChild(ButtonWidget.builder(
+                Text.literal("CLOSE"),
                 button -> close()
-        ).dimensions(x - 50, y + 35, 100, 20).build());
+        ).dimensions(left + panelWidth - 76, top + 159, 68, 20).build());
+    }
+
+    private void openCategory(String value) {
+        category = value;
+        clearAndInit();
     }
 
     private Text coordinatesText() {
@@ -57,25 +96,51 @@ public final class NSClientScreen extends Screen {
             int mouseY,
             float delta
     ) {
+        context.fill(0, 0, width, height, 0xD908101C);
+
+        int left = Math.max(8, width / 2 - 145);
+        int top = Math.max(8, height / 2 - 95);
+        int panelWidth = Math.min(290, width - 16);
+
         context.fill(
-                0, 0, this.width, this.height,
-                0xE8101824
+                left, top, left + panelWidth, top + 188,
+                0xFF111D2B
         );
 
-        context.drawCenteredTextWithShadow(
-                this.textRenderer,
+        context.fill(
+                left, top, left + panelWidth, top + 3,
+                0xFF35DDF5
+        );
+
+        context.fill(
+                left + 8, top + 30, left + 90, top + 154,
+                0xFF0B1420
+        );
+
+        context.fill(
+                left + 96, top + 30, left + panelWidth - 8, top + 154,
+                0xFF172536
+        );
+
+        context.drawText(
+                textRenderer,
                 Text.literal("NS CLIENT"),
-                this.width / 2,
-                this.height / 2 - 75,
-                0x55FFFF
+                left + 10, top + 10,
+                0xFF55E8FF, true
         );
 
-        context.drawCenteredTextWithShadow(
-                this.textRenderer,
-                Text.literal("HUD SETTINGS"),
-                this.width / 2,
-                this.height / 2 - 55,
-                0xFFFFFF
+        context.drawText(
+                textRenderer,
+                Text.literal(category + " SETTINGS"),
+                left + 103, top + 15,
+                0xFFFFFFFF, true
+        );
+
+        context.drawText(
+                textRenderer,
+                Text.literal("Nimrit Love Shivam"),
+                left + 10, top + 171,
+                0xFF91A9BE, false
         );
 
         super.render(context, mouseX, mouseY, delta);
